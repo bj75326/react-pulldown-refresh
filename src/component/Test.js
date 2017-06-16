@@ -2,7 +2,7 @@
 import React, {Component} from 'react';
 import Pulldown from './Pulldown.js';
 
-import PULLDOWN_STATS from './constants.js';
+import {PULLDOWN_STATS} from './constants.js';
 
 //简单封装 ajax call
 const customAjaxCall = (method, data, url, async)=>{
@@ -56,10 +56,12 @@ class Test extends Component{
 
     handleRefresh(){
 
-        let url = '';
+        let url = 'http://localhost:63342/react-pulldown-refresh/data/pulldown.json';
         customAjaxCall('get', null, url, true).then((response)=>{
             //setState put here
-            console.log(response);
+            //logic here used only for typical example.
+
+            this.setState({data: response.content});
         }, (status)=>{
             console.log(status);
         });
