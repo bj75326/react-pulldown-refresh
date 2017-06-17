@@ -45,12 +45,19 @@ const customAjaxCall = (method, data, url, async)=>{
     }
 };
 
+let page = 0;
+let pageLoading = 0;
+
+//let pulldownStatus = PULLDOWN_STATS.refreshing;
+let refreshDone = true;
+
 class Test extends Component{
 
     constructor(props){
         super(props);
         this.state = {
-            data: []
+            data: [],
+            pulldownStatus: PULLDOWN_STATS.refreshing
         };
     }
 
@@ -60,11 +67,56 @@ class Test extends Component{
         customAjaxCall('get', null, url, true).then((response)=>{
             //setState put here
             //logic here used only for typical example.
-
-            this.setState({data: response.content});
+            //data preprocessing
+            console.log(response);
+            page--;
+            let content = response.content;
+            if(Object.prototype.toString.call(content).slice(8, -1) === 'Array' && content.length > 0){
+                content = content.map((value, index)=>{
+                    if(page < -1){
+                        if(index<10){
+                            value.content = parseInt(value.content) + (page + 1) * 10 + '';
+                            return value;
+                        }
+                    }else{
+                        return value;
+                    }
+                });
+                const data = content.concat(this.state.data);
+                const pulldownStatus = PULLDOWN_STATS.refreshed;
+                refreshDone = true;
+                this.setState({
+                    data: data,
+                    pulldownStatus: pulldownStatus
+                });
+            }
+            return new Promise((resolve)=>{
+                setTimeout(()=>{
+                    resolve();
+                }, 600);
+            });
         }, (status)=>{
             console.log(status);
+            const pulldownStatus = PULLDOWN_STATS.refreshed;
+            refreshDone = false;
+            this.setState({
+                pulldownStatus: pulldownStatus
+            });
+            return new Promise((resolve)=>{
+                setTimeout(()=>{
+                    resolve();
+                }, 600);
+            });
+        }).then(()=>{
+            const pulldownStatus = PULLDOWN_STATS.resetAfterRefreshed;
+            this.setState({
+                pulldownStatus: pulldownStatus
+            });
         });
+    }
+
+    handleLoading(){
+
     }
 
     componentDidMount(){
@@ -85,7 +137,8 @@ class Test extends Component{
                     </div>
                 </div>
                 <div className="viewport pulldown">
-                    <Pulldown renderData={this.state.data} handleRefresh={this.handleRefresh.bind(this)} defaultStatus={PULLDOWN_STATS.refreshing}/>
+                    <Pulldown renderData={this.state.data} handleRefresh={this.handleRefresh.bind(this)} defaultStatus={this.state.pulldownStatus}
+                    refreshDone={refreshDone} />
                 </div>
             </div>
         );

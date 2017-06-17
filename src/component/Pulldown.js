@@ -32,6 +32,7 @@ class Pulldown extends Component {
         className: '',
         handleRefresh: noop,
         defaultStatus: PULLDOWN_STATS.init,
+        refreshDone: true,
         successTips: '加载成功',
         failureTips: '加载失败'
     };
@@ -40,7 +41,8 @@ class Pulldown extends Component {
         prefixCls: PropTypes.string,
         className: PropTypes.string,
         handleRefresh: PropTypes.func,
-        defaultStatus: PropTypes.string
+        defaultStatus: PropTypes.string,
+        refreshDone: PropTypes.bool
     };
 
     handleTouchStart(e){
@@ -55,17 +57,46 @@ class Pulldown extends Component {
 
     }
 
+    componentWillReceiveProps(nextProps){
+        console.log(nextProps.defaultStatus);
+        const pulldownStatus = nextProps.defaultStatus;
+        let pulldownDistance;
+        switch(pulldownStatus){
+            case PULLDOWN_STATS.resetAfterRefreshed:
+                pulldownDistance = 0;
+                break;
+            case PULLDOWN_STATS.reset:
+                pulldownDistance = 0;
+                break;
+            case PULLDOWN_STATS.refreshing:
+                pulldownDistance = 50;
+                break;
+            case PULLDOWN_STATS.refreshed:
+                pulldownDistance = 50;
+                break;
+            case PULLDOWN_STATS.init:
+                pulldownDistance = 0;
+                break;
+            default:
+                pulldownDistance = 0;
+        }
+        this.setState({
+            pulldownDistance: pulldownDistance,
+            pulldownStatus: pulldownStatus
+        });
+    }
+
     componentDidMount(){
         //if (this.state.pulldownStatus === PULLDOWN_STATS.refreshing)
         //should run this.props.handleRefresh here.
-        if(this.props.handleRefresh){
+        if(this.state.pulldownStatus === PULLDOWN_STATS.refreshing){
             this.props.handleRefresh();
         }
     }
 
     render(){
 
-        const {className, prefixCls} = this.props;
+        const {className, prefixCls, refreshDone, successTips, failureTips} = this.props;
 
         const pulldownStatus = this.state.pulldownStatus;
         const style = {
@@ -94,7 +125,8 @@ class Pulldown extends Component {
                         <span className={styles[`${prefixCls}-arrow`]}>↓</span>
                         <span className={styles[`${prefixCls}-snake`]}/>
                         <span className={styles[`${prefixCls}-tips`]}>
-
+                            {refreshDone ? <FontAwesome name="check"/> : <FontAwesome name="close"/>}
+                            <span>{refreshDone ? successTips : failureTips}</span>
                         </span>
                     </div>
                     <div className={styles[`${prefixCls}-list`]} >
