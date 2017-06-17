@@ -48,11 +48,11 @@
     transform: rotate(180deg);
 }
 
-.bin-pulldown-top span>.bin-pulldown-snake{
+.bin-pulldown-top span.bin-pulldown-snake{
     display: none;
 }
 
-.bin-pulldown-refreshing .bin-pulldown-top span>.bin-pulldown-snake{
+.bin-pulldown-refreshing .bin-pulldown-top span.bin-pulldown-snake{
     display: inline-block;
 }
 
