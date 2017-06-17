@@ -63,7 +63,8 @@ class Test extends Component{
 
     handleRefresh(){
 
-        let url = 'http://localhost:63342/react-pulldown-refresh/data/pulldown.json';
+        //let url = 'http://localhost:63342/react-pulldown-refresh/data/pulldown.json';
+        let url = 'https://bj75326.github.io/react-pulldown-refresh/data/pulldown.json';
         customAjaxCall('get', null, url, true).then((response)=>{
             //setState put here
             //logic here used only for typical example.
