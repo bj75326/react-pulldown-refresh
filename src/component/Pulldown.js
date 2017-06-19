@@ -11,6 +11,9 @@ import styles from './style.css';
 
 let noop = ()=>{};
 
+let isTouched = false;
+let startY;
+
 class Pulldown extends Component {
 
     constructor(props){
@@ -34,7 +37,8 @@ class Pulldown extends Component {
         defaultStatus: PULLDOWN_STATS.init,
         refreshDone: true,
         successTips: '加载成功',
-        failureTips: '加载失败'
+        failureTips: '加载失败',
+        readyDistance: 70
     };
 
     static PropTypes = {
@@ -42,23 +46,67 @@ class Pulldown extends Component {
         className: PropTypes.string,
         handleRefresh: PropTypes.func,
         defaultStatus: PropTypes.string,
-        refreshDone: PropTypes.bool
+        refreshDone: PropTypes.bool,
+        readyDistance: PropTypes.number
     };
 
     handleTouchStart(e){
-
+        if(!isTouched){
+            isTouched = true;
+            const touch = e.touches[0];
+            startY = touch.clientY;
+            e.preventDefault();
+            this.setState({
+                pulldownStatus: PULLDOWN_STATS.pulling
+            });
+        }
     }
 
     handleTouchMove(e){
-
+        if(isTouched){
+            const touch = e.touches[0];
+            const deltaY = touch.clientY - startY;
+            const readyDistance = this.props.readyDistance;
+            let pulldownStatus;
+            console.log(deltaY);
+            if(deltaY > 0){
+                //content下滑距离暂定为手指下滑距离的 1/2。
+                if(deltaY/2 > readyDistance){
+                    pulldownStatus = PULLDOWN_STATS.ready;
+                }else{
+                    pulldownStatus = PULLDOWN_STATS.pulling;
+                }
+                const pulldownDistance = deltaY/2;
+                this.setState({
+                    pulldownStatus: pulldownStatus,
+                    pulldownDistance: pulldownDistance
+                });
+            }
+        }
     }
 
     handleTouchEnd(e){
-
+        if(isTouched){
+            isTouched = true;
+            let pulldownStatus;
+            let pulldownDistance;
+            if(this.state.pulldownStatus === PULLDOWN_STATS.pulling){
+                pulldownStatus = PULLDOWN_STATS.reset;
+                pulldownDistance = 0;
+            }else if(this.state.pulldownStatus === PULLDOWN_STATS.ready){
+                pulldownStatus = PULLDOWN_STATS.refreshing;
+                pulldownDistance = 50;
+                this.props.handleRefresh();
+            }
+            this.setState({
+                pulldownDistance: pulldownDistance,
+                pulldownStatus: pulldownStatus
+            });
+        }
     }
 
     componentWillReceiveProps(nextProps){
-        console.log(nextProps.defaultStatus);
+        //console.log(nextProps.defaultStatus);
         const pulldownStatus = nextProps.defaultStatus;
         let pulldownDistance;
         switch(pulldownStatus){
@@ -95,7 +143,7 @@ class Pulldown extends Component {
     }
 
     render(){
-
+        //console.log(this.props.renderData);
         const {className, prefixCls, refreshDone, successTips, failureTips} = this.props;
 
         const pulldownStatus = this.state.pulldownStatus;

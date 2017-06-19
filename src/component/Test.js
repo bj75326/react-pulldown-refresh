@@ -63,16 +63,17 @@ class Test extends Component{
 
     handleRefresh(){
 
-        //let url = 'http://localhost:63342/react-pulldown-refresh/data/pulldown.json';
-        let url = 'https://bj75326.github.io/react-pulldown-refresh/data/pulldown.json';
+        let url = 'http://localhost:63342/react-pulldown-refresh/data/pulldown.json';
+        //let url = 'https://bj75326.github.io/react-pulldown-refresh/data/pulldown.json';
         customAjaxCall('get', null, url, true).then((response)=>{
             //setState put here
             //logic here used only for typical example.
             //data preprocessing
-            console.log(response);
+            //console.log(response);
             page--;
             let content = response.content;
             if(Object.prototype.toString.call(content).slice(8, -1) === 'Array' && content.length > 0){
+                /*
                 content = content.map((value, index)=>{
                     if(page < -1){
                         if(index<10){
@@ -82,7 +83,13 @@ class Test extends Component{
                     }else{
                         return value;
                     }
-                });
+                });*/
+                if(page < -1){
+                    content = content.slice(0, 11).map((value)=>{
+                        value.content = parseInt(value.content) + (page + 1) * 10 + '';
+                        return value;
+                    });
+                }
                 const data = content.concat(this.state.data);
                 const pulldownStatus = PULLDOWN_STATS.refreshed;
                 refreshDone = true;
