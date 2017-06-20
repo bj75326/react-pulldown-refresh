@@ -7,7 +7,11 @@ import FontAwesome from 'react-fontawesome';
 
 import Card from './Card.js';
 
+import {on, off} from '../common/utility.js';
+
 import styles from './style.css';
+
+
 
 let noop = ()=>{};
 
@@ -51,11 +55,11 @@ class Pulldown extends Component {
     };
 
     handleTouchStart(e){
-        if(!isTouched){
+        if(!isTouched && this.pulldownWrapper.scrollTop <= 0){
             isTouched = true;
             const touch = e.touches[0];
             startY = touch.clientY;
-            e.preventDefault();
+
             this.setState({
                 pulldownStatus: PULLDOWN_STATS.pulling
             });
@@ -63,13 +67,14 @@ class Pulldown extends Component {
     }
 
     handleTouchMove(e){
-        if(isTouched){
+        if(isTouched && this.pulldownWrapper.scrollTop <=0){
             const touch = e.touches[0];
             const deltaY = touch.clientY - startY;
             const readyDistance = this.props.readyDistance;
             let pulldownStatus;
             console.log(deltaY);
             if(deltaY > 0){
+                e.preventDefault();
                 //content下滑距离暂定为手指下滑距离的 1/2。
                 if(deltaY/2 > readyDistance){
                     pulldownStatus = PULLDOWN_STATS.ready;
@@ -102,6 +107,15 @@ class Pulldown extends Component {
                 pulldownDistance: pulldownDistance,
                 pulldownStatus: pulldownStatus
             });
+        }
+    }
+
+    getPulldownWrapper(pulldownRootDom){
+
+        if(pulldownRootDom === null){
+            this.pulldownWrapper = null;
+        }else{
+            this.pulldownWrapper = pulldownRootDom.parentNode;
         }
     }
 
@@ -140,6 +154,19 @@ class Pulldown extends Component {
         if(this.state.pulldownStatus === PULLDOWN_STATS.refreshing){
             this.props.handleRefresh();
         }
+
+        //as passive event need to do preventDefault, bind event manually here.
+        on(this.pulldownWrapper, 'touchstart', this.handleTouchStart.bind(this), false);
+        on(this.pulldownWrapper, 'touchmove', this.handleTouchMove.bind(this), false);
+        on(this.pulldownWrapper, 'touchend', this.handleTouchEnd.bind(this), false);
+    }
+
+    componentWillUnmount(){
+        //unbind event bind here.
+
+        off(this.pulldownWrapper, 'touchstart', this.handleTouchStart.bind(this), false);
+        off(this.pulldownWrapper, 'touchmove', this.handleTouchMove.bind(this), false);
+        off(this.pulldownWrapper, 'touchend', this.handleTouchEnd.bind(this), false);
     }
 
     render(){
@@ -163,11 +190,11 @@ class Pulldown extends Component {
         });
 
         return (
-            <div className={pulldownClassName}>
+            <div className={pulldownClassName} ref={this.getPulldownWrapper.bind(this)}>
                 <div className={styles[`${prefixCls}-content`]} style={style}
-                     onTouchStart={this.handleTouchStart.bind(this)}
-                     onTouchMove={this.handleTouchMove.bind(this)}
-                     onTouchEnd={this.handleTouchEnd.bind(this)}
+                     //onTouchStart={this.handleTouchStart.bind(this)}
+                     //onTouchMove={this.handleTouchMove.bind(this)}
+                     //onTouchEnd={this.handleTouchEnd.bind(this)}
                 >
                     <div className={styles[`${prefixCls}-top`]}>
                         <span className={styles[`${prefixCls}-arrow`]}>↓</span>

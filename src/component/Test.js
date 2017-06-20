@@ -4,8 +4,10 @@ import Pulldown from './Pulldown.js';
 
 import {PULLDOWN_STATS} from './constants.js';
 
+import {customAjaxCall} from '../common/utility.js';
+
 //简单封装 ajax call
-const customAjaxCall = (method, data, url, async)=>{
+/*const customAjaxCall = (method, data, url, async)=>{
     if(method.toLowerCase() === 'get'){
         return new Promise((resolve, reject)=>{
             let xhr = new XMLHttpRequest();
@@ -43,7 +45,7 @@ const customAjaxCall = (method, data, url, async)=>{
             xhr.send(data);
         });
     }
-};
+};*/
 
 let page = 0;
 let pageLoading = 0;
@@ -63,8 +65,9 @@ class Test extends Component{
 
     handleRefresh(){
 
-        let url = 'http://localhost:63342/react-pulldown-refresh/data/pulldown.json';
-        //let url = 'https://bj75326.github.io/react-pulldown-refresh/data/pulldown.json';
+        //let url = 'http://localhost:63342/react-pulldown-refresh/data/pulldown.json';
+        let url = 'https://bj75326.github.io/react-pulldown-refresh/data/pulldown.json';
+
         customAjaxCall('get', null, url, true).then((response)=>{
             //setState put here
             //logic here used only for typical example.

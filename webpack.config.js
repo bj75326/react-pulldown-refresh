@@ -30,7 +30,7 @@ module.exports = {
                 loader: 'style-loader!css-loader?modules'
             }
         ]
-    }
+    },
 
     /*
     plugins: [
@@ -40,4 +40,12 @@ module.exports = {
             filename: 'index.html'
         })
     ] */
+
+    plugins: [
+        new webpack.optimize.UglifyJsPlugin({
+            compress: {
+                warnings: false
+            }
+        })
+    ]
 };
