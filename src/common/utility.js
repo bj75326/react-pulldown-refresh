@@ -26,11 +26,11 @@ export const customAjaxCall = (method, data, url, async)=>{
                 if(xhr.readyState === 4){
                     if(xhr.status === 200 || xhr.status === 304){
                         //test only
-                        let a = +new Date();
+                        /*let a = +new Date();
                         let b;
                         do{
                             b = +new Date();
-                        }while(b-a < 3000)
+                        }while(b-a < 3000) */
                         //test only
                         resolve(xhr.response);
                     }else{

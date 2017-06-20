@@ -91,8 +91,8 @@ class Pulldown extends Component {
     }
 
     handleTouchEnd(e){
-        if(isTouched){
-            isTouched = true;
+        if(isTouched && this.pulldownWrapper.scrollTop <=0){
+            isTouched = false;
             let pulldownStatus;
             let pulldownDistance;
             if(this.state.pulldownStatus === PULLDOWN_STATS.pulling){
