@@ -88,7 +88,7 @@ class Test extends Component{
                     }
                 });*/
                 if(page < -1){
-                    content = content.slice(0, 11).map((value)=>{
+                    content = content.slice(0, 10).map((value)=>{
                         value.content = parseInt(value.content) + (page + 1) * 10 + '';
                         return value;
                     });

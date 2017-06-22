@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import classnames from 'classnames';
 import {PULLDOWN_STATS} from './constants.js';
 import FontAwesome from 'react-fontawesome';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import Card from './Card.js';
 
@@ -162,8 +163,8 @@ class Pulldown extends Component {
     }
 
     componentWillUnmount(){
-        //unbind event bind here.
 
+        //unbind event bind here.
         off(this.pulldownWrapper, 'touchstart', this.handleTouchStart.bind(this), false);
         off(this.pulldownWrapper, 'touchmove', this.handleTouchMove.bind(this), false);
         off(this.pulldownWrapper, 'touchend', this.handleTouchEnd.bind(this), false);
@@ -201,13 +202,15 @@ class Pulldown extends Component {
                         <span className={styles[`${prefixCls}-snake`]}/>
                         <span className={styles[`${prefixCls}-tips`]}>
                             {refreshDone ? <FontAwesome name="check"/> : <FontAwesome name="close"/>}
-                            <span>{refreshDone ? successTips : failureTips}</span>
+                            <span>{refreshDone ? ' ' + successTips : ' ' + failureTips}</span>
                         </span>
                     </div>
                     <div className={styles[`${prefixCls}-list`]} >
-                        {this.props.renderData.map((card, index)=>{
-                            return <Card content={card.content} key={index} />
-                        })}
+                        <ReactCSSTransitionGroup transitionName="card" >
+                            {this.props.renderData.map((card)=>{
+                                return <Card content={card.content} key={card.content} />
+                            })}
+                        </ReactCSSTransitionGroup>
                     </div>
                 </div>
             </div>
